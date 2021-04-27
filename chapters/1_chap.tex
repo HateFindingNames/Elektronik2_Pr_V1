@@ -9,7 +9,7 @@
 		R_2 = \left( U_{aus} - U_{Ref} \right) \cdot \left( \frac{U_{Ref}}{R_1} + I_{Adj} \right)^{-1}
 	\end{equation}
 
-	Mit den aus dem Datenblatt zu entnehmenden Werten für \(U_{Ref} = \SI{1,25}{V}\), \(I_{Adj} = \SI{50\cdot 10^{-6}}{A}\) und \(R_1 = \SI{240}{\ohm}\) und einer vorgegebenen
+	Mit den aus dem Datenblatt zu entnehmenden Werten \cite{datasheet.LM317.TexasInstruments.2021} für \(U_{Ref} = \SI{1,25}{V}\), \(I_{Adj} = \SI{50\cdot 10^{-6}}{A}\) und \(R_1 = \SI{240}{\ohm}\) und einer vorgegebenen
 	Ausgangsspannung \(U_{aus}\) von \SI{(5\pm0,1)}{V} ergibt sich \(R_2\) zu:
 	\begin{align}
 		R_2 &= \left( \SI{5}{V} - \SI{1,25}{V} \right) \cdot \left( \frac{\SI{1,25}{V}}{\SI{240}{\ohm}} + \SI{50\cdot10^{-6}}{A} \right)^{-1} \nonumber \\
@@ -34,7 +34,7 @@
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=.9\textwidth]{referenzen/typical_app_schem.jpg}
-		\caption{Aus dem Datenblatt übernommenes Diagram eines typischen Anwendungsszenarios eines LM317 Linearreglers. Zentrale Elemente sind hier der Linearregler selbst, sowie
+		\caption{Aus dem Datenblatt übernommenes Diagram eines typischen Anwendungsszenarios eines LM317 Linearreglers \cite{datasheet.LM317.TexasInstruments.2021}. Zentrale Elemente sind hier der Linearregler selbst, sowie
 		die beiden Widerstände \(R_1\) und \(R_2\). \(R_2\) insbesondere dient hier zur justierung der Ausgangsspannung.}
 		\label{fig:typical app sch}
 	\end{figure}
