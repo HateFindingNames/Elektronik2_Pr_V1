@@ -1,1 +1,205 @@
-\chapter{Versuchsaufbau}
+%ltex: language=de
+\chapter{Simulation}
+	Um das Verhalten des Spannungsreglers vom Typ LM317 zu untersuchen wird die im Kapitel 9.2 \textit{Typical Application} des Datenblattes
+	vorgeschlagene Schaltung in \textsc{LTSpice} aufgebaut und simuliert. Anschließend werden jeweils die simulierten Werte mit den
+	rechnerisch zu erwartenden Werten verglichen.
+	\section{Leerlaufspannung}\label{sec:leerlaufspannung}
+		Nach \cref{tab:lm317 characteristics} wird eine Mindestlast von \SI{3,5}{mA} bei einer Differenzspannung zwischen Eingang
+		und Ausgang des Spannungsreglers von \SI{40}{V} benötigt, um die gewünschte Ausgangsspannung aufrecht halten zu können.
+		Um auch bei offenen Ausgangsklemmen eine regulierte Ausgangsspannung sicherzustellen, kann das Widerstandspaar \(R_1\) und \(R_2\)
+		so dimensioniert werden, dass sich der gewünschte Ausgangsstrom einstellt. Bereits mit den in \cref{eq:ausgangsspannung voila} gewählten
+		Werten wird eine konstante Last von \SI{4,6}{mA} sichergestellt. Hier stellt sich eine Ausgangsspannung von \(U_{out} = \SI{5,07525}{V}\) ein.\par
+		\Cref{fig:plot minimum load} zeigt den simulierten Verlauf der Ausgangsspannung als Funktion des Widerstandes \(R_1\) im Intervall
+		von \SI{240}{\ohm} bis \SI{1500}{\ohm}.
+		%
+		\begin{figure}[h]
+			\centering
+			\includesvg[inkscapelatex=false, width=.9\textwidth]{LTSpice/plots_schematics/dia_minimum_load}
+			\caption[Simulation der Ausgangsspannung im Leerlauf in Abhängigkeit von \(R_1\)]{Simulation der Ausgangsspannung \(U_{out}\) als Funktion des Widerstandes \(R_1\) mit der Eingangsspannung \(U_{in}\) als Parameter.
+			Die steilere Kurve zeigt den Verlauf bei einer Eingangsspannung von \SI{45}{V}. Die flachere Kurve den, bei einer Eingangsspannung von \SI{12}{V}.}
+			\label{fig:plot minimum load}
+		\end{figure}
+		%
+		Der steilere Verlauf entspricht einer Eingangsspannung von \SI{45}{V}. Gemäß Datenblatt kann bei einem typischen Laststrom von \(< \SI{3.5}{mA}\) mit einer Spannungsdifferenz von
+		\SI{40}{V} zwischen Ausgang und Eingang keine Regelung mehr garantiert werden. Die Beuge bei \(\approx \SI{340}{\ohm}\) entspricht einem
+		Ausgangsstrom von
+		%
+		\begin{align}
+			I_{out} &= \frac{U_{out}}{R_1 + R_1 \cdot 3,037} = \frac{\SI{5}{V}}{\SI{340}{\ohm} + \SI{340}{\ohm} \cdot 3,037} \nonumber \\
+					&\approx \SI{3,6}{mA}
+			\label{eq:ausgangsstrom bei 45V in und ohne last}
+		\end{align}
+		%
+		was sich recht gut mit den Angaben im Datenblatt deckt.\par
+		Die flachere Kurve hingegen wurde mit einer Spannungsdifferenz von \SI{12}{V} simuliert. Hier bricht die Spannungsregelung
+		deutlich später bei \(\approx \SI{940}{\ohm}\) ein, was einem Laststrom von \(\approx \SI{1,3}{mA}\) entspricht.
+		%
+	\section{Strom Adjust-Anschluss}
+		Mit den Werten für \(R_1 = \SI{270}{\ohm}\) und \(R_2 = \SI{820}{\ohm}\) was einem Laststrom von \(\approx \SI{4.6}{mA}\) entspricht,
+		stellt sich ein Strom aus dem Adjust-Anschluss von \(\approx \SI{47.5}{\micro A}\) ein.
+		%
+	\section{Referenzspannung}
+		%
+		Vom Hersteller wird angegeben, dass die Referenzspannung zwischen dem Ausgang des LM317 und seinem Adjust-Anschluss gemessen werden kann und nominell
+		\SI{1,25}{V} beträgt (vgl. \cref{fig:typical app sch}).\par
+		\textsc{LTSpice} lässt jedoch nur Messung gegen GND zu. Um die Referenzspannung zu finden wird also die Spannung am Adjustanschluss von der Ausgnagsspannung
+		subtrahiert um die Referenzspannung zu erhalten. Die Simulation gibt hier einen Wert von
+		\begin{equation}
+			U_{Ref} = U_{out} - U_{Adj} = \SI{5,07525}{V} - \SI{3,8378}{V} \approx \SI{1,23745}{V}
+		\end{equation}
+	\section{Maximaler Ausgangsstrom}
+		Dem Datenblatt folgend ist der Linearregler -- abhängig von der Spannungsdifferenz zwischen Ein- und Ausgang -- in seinem maximalen
+		Ausgangsstrom limitiert. Simulationsergebnisse im Vergleich mit den Angaben im Datenblatt sind in \cref{tab:maximaler strom} aufgeführt.
+		\begin{table}[h]
+			\centering
+			\caption[Gegenüberstellung von \(I_{out,max}\) und den Angaben im Datenblatt]{Vergleich der im Datenblatt angegebenen Werte für den maximalen Ausgangsstrom mit den simulierten Werten.}
+			\begin{tabular}{@{}SSS@{}}
+				\toprule
+				\multicolumn{1}{l}{Eingangsspannung}	&\multicolumn{2}{c}{Ausgangsstrom}		\\
+				\multicolumn{1}{c}{\(U_{in}\) / \(V\)}				&\multicolumn{1}{c}{\(I_{out,typ}\) / \(A\)}&\multicolumn{1}{c}{\(I_{out,sim}\) / \(A\)}\\
+				\midrule
+				12					&2,2		&2,15615\\
+				45					&0,4		&0,788137\\
+				\bottomrule				
+			\end{tabular}
+			\label{tab:maximaler strom}
+		\end{table}
+		%
+	\section{Temperaturstabilität der Ausgangsspannung}
+		Kapitel 7.5 des Datenblattes zum LM317 ist eine Ausgangsspannungsstabilität von typischerweise \SI{0,7}{\percent} im Temperaturbereich
+		von \SI{0}{\celsius} bis \SI{125}{\celsius} zu entnehmen.
+		\begin{figure}[h]
+			\centering
+			\includesvg[inkscapelatex=false, width=.9\textwidth, height=8cm]{LTSpice/plots_schematics/temp_stab.svg}
+			\caption[Verlauf der Ausgangsspannung im Temperaturbereich \SI{0}{\celsius} bis \SI{125}{\celsius}]{Plot des simulierten Spannungsverlaufs der Ausgangsspannung im Temperaturbereich von \SI{0}{\celsius} bis \SI{125}{\celsius}.}
+			\label{fig:temp stab}
+		\end{figure}
+		Mit Blick auf \cref{fig:temp stab} offenbart eine Simulation obiger Schaltung
+		im angegebenen Temperaturbereich eine Abweichung der Ausgangsspannung von \SI{+0,02132}{V} relativ zur Ausgangsspannung bei Raumtemperatur von
+		\SI{5,07525}{V}. Dies entspricht einem relativen Anstieg von \SI{0,42}{\percent}.\par
+		Durch den starl exponentiellen Verlauf der Ausgangsspannung bei steigender Temperatur erscheint es nicht sinnvoll, einen
+		linearen Temperaturkoeffizienten anzunehmen.
+		%
+	\section{Verhalten bei Eingangsspannungssprüngen}
+		Um das Verhalten der Schaltung bei sprunghaften Änderungen der Eingangsspannung zu untersuchen wurde der Eingangsspannung ein symmetrisches Rechtecksignal
+		mit \({U_pp} = \SI{2}{V}\), \(t_{rise} = t_{fall} = \SI{1}{\micro \second}\) und einer Periodendauer von \(T = \SI{100}{m \second}\) hinzuaddiert (vgl. \cref{fig:pulsefigs}).
+		Die Simulation wurde mit einem Wert für \(C_1 = \SI{10}{\micro F}\) durchgeführt.\par\medskip
+		\Cref{subfig:sag} zeigt einen Zoom auf den Verlauf der Ausgangsspannung bei fallender Flanke des Eingangssignals.
+		%
+		\begin{figure}[h]
+			\centering
+			\begin{subfigure}[t]{\textwidth}
+				\centering
+				\includesvg[inkscapelatex=false, width=\textwidth]{LTSpice/plots_schematics/pulse}
+				\caption{}
+				\label{subfig:pulse}
+			\end{subfigure}
+			\begin{subfigure}[l]{.45\textwidth}
+				\centering
+				\includesvg[inkscapelatex=false, width=\textwidth]{LTSpice/plots_schematics/pulse_output_sag}
+				\caption{Reaktion bei fallender Flanke.}
+				\label{subfig:sag}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}[r]{.45\textwidth}
+				\centering
+				\includesvg[inkscapelatex=false, width=\textwidth]{LTSpice/plots_schematics/pulse_output_spike}
+				\caption{Reaktion bei steigender Flanke.}
+				\label{subfig:spike}
+			\end{subfigure}
+			\caption[Puls-Reaktion der Ausgangsspannung bei sprunghaften Änderungen der Eingangsspannung]{Pulse-Reaktion der Ausgangsspannung (grün) bei sprunghaften Änderungen der Eingangsspannung (blau).}
+			\label{fig:pulsefigs}
+		\end{figure}
+		%
+		Es ist zu erkennen, dass \(U_{out}\) um \(\approx \SI{84}{mV}\) einbricht mit einer Einschwingzeit zurück zur nominellen Ausgangsspannung von \SI{0,3}{ms}.
+		In \cref{subfig:spike} wird die Reaktion auf eine steigende Flanke des der Eingangsspannung überlagerten Rechtecksignals dargestellt.
+		Hier beträgt der größte Ausschlag \(\approx \SI{320}{mV}\) mit einer Einschwingdauer von etwa \(\SI{240}{\micro s}\).\par\medskip
+		\Cref{fig:line transient response} aus Kapitel 9.2.3 \textit{Application Curves} des Datenblattes zeigt die Reaktion auf ein Rechtecksignal mit \(U_{pp} = \SI{1}{V}\)
+		und einer Ausgangsspannung von etwa \SI{10,06}{V}. Hier wird ein Überschwingen auf \SI{10,1}{V} mit einer Dauer von \(> \SI{3}{\micro \second}\)
+		und ein Unterschwingen auf bis zu \SI{10,03}{V} mit einer Dauer von ebenfalls \(> \SI{3}{\micro \second}\).
+		%
+	\section{Unterdrückung von Störspannungen}\label{sec:stoerspannungen}
+		Für das Verhalten der Schaltung unter Einfluss einer Störspannung gibt das Datenblatt eine Dämpfung von \(PSRR = \SI{57}{dB}\) ohne
+		\(C_{adj}\) und \(PSRR = \SI{64}{dB}\) mit \(C_{adj} = \SI{10}{\micro F}\) an. Testbedingungen zu diesen Angaben sind eine
+		Frequenz von \(f = \SI{120}{Hz}\) und einer Eingangsspannung von \SI{10}{V}.\par
+		\begin{figure}[h]
+			\centering
+			\includesvg[inkscapelatex=false, width=.8\textwidth]{LTSpice/plots_schematics/ripple_rejection_PSRR}
+			\caption[Wellenform der Ausgangsspannung mit Störspannung]{Wellenform der Ausgangsspannung für \(C_{adj} = \SI{10}{\micro F}\) (blau) und \(C_{adj} = \SI{0}{F}\) (grün).}
+			\label{fig:ripple rejection}
+		\end{figure}
+		Um die simulierte Schaltung dahingehend zu überprüfen wurde eine sinusförmige Störspannung mit einer Amplitude \(\hat{U}_{pp} = 2\) und einer Frequenz gemäß
+		Datenblatt von \SI{120}{Hz} um das Eingangsspannungsniveau gelegt. Weiter wird die Schaltung mit \(I_{out} = \SI{500}{mA}\) belastet, was die störungsfreie Ausgangsspannung
+		auf \(U_{out} = \SI{5,07244}{V}\) reduziert. \Cref{fig:ripple rejection} sind Spitzenwerte der Ausgangsspannung mit
+		\(\hat{U}_{out,0} \approx \SI{5,0725754}{V}\) für \(C_{adj} = \SI{0}{F}\) und \(\hat{U}_{out,10} \approx \SI{5,0725005}{V}\) für \(C_{adj} = \SI{10}{\micro F}\) abzulesen.
+		\begin{equation}
+			PSRR_i = 20 \cdot log_{10}\left(\frac{2 \cdot \left(\hat{U}_{out,i} - U_{out}\right)}{\hat{U}_{pp}}\right)
+		\end{equation}
+		errechnen sich damit Dämpfungen von \SI{-77,37}{dB} bzw. \SI{-84,36}{dB}. Zum näheren Vergleich zeigt \cref{fig:bode} ein \textsc{Bode}-Diagram des
+		Frequenzverhaltens der Schaltung im Bereich von \SI{100}{Hz} bis \SI{1}{MHz}. Hier fallen die jeweiligen Dämpfungen deutlich höher aus, was auf Ablesefehler
+		bei den zur Berechnung herangezogenen Zahlenwerten schließen lässt.
+		\begin{figure}[h]
+			\centering
+			\includesvg[inkscapelatex=false, width=.8\textwidth]{LTSpice/plots_schematics/bode_ripple_rejection}
+			\caption[\textsc{Bode}-Diagram der Ausgangsspannung mit überlagerter Störspannung]{\textsc{Bode}-Diagram der Ausgangsspannung mit überlagerter Störspannung im Frequenzbereich
+			von \SI{100}{Hz} bis \SI{1}{MHz} für \(C_{adj} = \SI{10}{\micro F}\) (blau) und \(C_{adj} = \SI{0}{F}\) (grün).}
+			\label{fig:bode}
+		\end{figure}
+		%
+	\section{Verhalten bei Lastsprüngen}
+		Unter Kapitel 7.5 des Datenblattes \textit{Load regulation} werden für Lastsprünge von \SI{10}{mA} auf \SI{1500}{mA} in Anwesenheit des Kondensators \(C_{Adj} = \SI{10}{\micro F}\)
+		typische Änderungen der Ausgangsspannung von \SI{0,1}{\percent} oder maximal \SI{25}{mV} angegeben.\par
+		\begin{figure}[h]
+			\begin{subfigure}[]{\textwidth}
+				\centering
+				\includesvg[inkscapelatex=false, width=\textwidth]{LTSpice/plots_schematics/load-transient_response}
+				\caption[]{Der Verlauf der Ausgangsspannung bei Lastsprüngen (unten) und der zugehörige, rechteckförmige Lastsprung (oben).}
+				\label{subfig:load transient response}
+			\end{subfigure}
+			\vspace{3mm}
+			\begin{subfigure}[]{\textwidth}
+				\includesvg[inkscapelatex=false, width=\textwidth]{LTSpice/plots_schematics/load-transient_response_deltaU}
+				\caption[]{Zoom auf den blau markierten Bereich. Zu sehen ist eine Differenz der Ausgangsspannung im eingeschwungenen Zustand von \(\approx \SI{-4}{mV}\) gegenüber dem
+				mit \SI{10}{\micro F} kapazitiv gestützen Adjust-Anschluss.}
+				\label{subfig:load transient response deltaU}
+			\end{subfigure}
+			\caption[Verhalten der Schaltung bei Lastsprüngen]{Verhalten der Schaltung bei Lastsprüngen. (a): Wellenformen der Ausgangsspannung bei verschiedenen Werten für \(C_{Adj}\).
+			(b): Zoom auf den blau markierten Bereich in (a).}
+		\end{figure}
+		\Cref{subfig:load transient response deltaU} zeigt im eingeschwungenen Zustand bei einer Last von \SI{1500}{mA} eine
+		Ausgangsspannung von \(\approx \SI{5,0725}{V}\) (untere Kurve). Zur Referenz wurde das Verhalten auch bei Abwesenheit von \(C_{Adj}\) durchgeführt, was
+		in einer eingeschwungenen Spannung von \(\approx \SI{5,064}{V}\) resultiert.\par
+		Die relativen und absoluten Spannungsänderungen gegenüber der \(U_{out}\) der unbelasteten Schaltung (vgl. \cref{sec:leerlaufspannung}) sind
+		\begin{equation}
+			\Delta U_{out,10} = U_{out} - U_{out,10} = \SI{5,07525}{V} - \SI{5,0725}{V} = \SI{2,75}{mV} \qquad \Rightarrow \qquad \approx \SI{0,054}{\percent}
+		\end{equation}
+		bzw.
+		\begin{equation}
+			\Delta U_{out,0} = U_{out} - U_{out,0} = \SI{5,07525}{V} - \SI{5,064}{V} = \SI{11,25}{mV} \qquad \Rightarrow \qquad \approx \SI{0,222}{\percent}
+		\end{equation}
+		Beide Werte liegen unterhalb der Angabe für die \textit{typische} Abweichung und deutlich unterhalb der Angabe für die \textit{maximalen} Abweichungen.\par\medskip
+		%
+		Die dynamischen Ausgangswiderstände ergeben sich so zu
+		\begin{align}
+			r_{10} = \frac{\Delta U_{out,10}}{\Delta I_{load}} = \frac{\SI{5,0725}{V}}{\SI{1500}{mA} - \SI{10}{mA}} \approx \SI{1,85}{m\ohm} \nonumber \\
+			r_{0} = \frac{\Delta U_{out,10}}{\Delta I_{load}} = \frac{\SI{5,064}{V}}{\SI{1500}{mA} - \SI{10}{mA}} \approx \SI{7,55}{m\ohm}
+		\end{align}
+		%
+		\newpage
+	\section{Wirkungsgrad des Netzteils}
+		Zur Abschätzung des Einflusses der Eingangsspannung auf den Wirkungsgrad der Schaltung wird der Linearregler mit \(R_{load} = \SI{6}{\ohm}\) belastet und
+		die Eingansspannung im Intervall \(\SI{10}{V} \leq U_{in} \leq \SI{20}{V}\) variiert. \Cref{fig:efficiency} zeigt den Verlauf einerseits der Verlustleistung
+		am LM317 in rot und den Wirkungsgrad der Schaltung in blau.\par
+		Zur Berechnung des Wirkungsgrades wurde die Gleichung
+		\begin{equation}
+			\eta = \frac{P_{out}}{P_{in}}
+		\end{equation}
+		mit \(P_{out} = U_{loud} \cdot I_{load}\) und \(P_{in} = U_{in} \cdot I_{in}\) heran gezogen.
+		\begin{figure}[h]
+			\centering
+			\includesvg[inkscapelatex=false, width=.9\textwidth]{LTSpice/plots_schematics/efficiency}
+			\caption[Verlauf der Verlustleistung und des Wirkungsgrades jeweils als Funktion der Eingangsspannung]{Verlauf der Verlustleistung im Linearspannungsregler (rot) und des
+			Wirkungsgrades (blau) jeweils als Funktion der Eingangsspannung im Intervall \(\SI{10}{V} \leq U_{in} \leq \SI{20}{V}\) aufgetragen.}
+			\label{fig:efficiency}
+		\end{figure}
+		Es ist hier zu bemerken, dass bei höheren Eingangsspannungen Maßnahmen ergriffen werden müssen, um die zusätzliche Verlustleistung abführen zu können.
