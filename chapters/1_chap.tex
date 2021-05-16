@@ -30,11 +30,6 @@
 		\label{eq:ausgangsspannung voila}
 	\end{equation}
 	Es konnte gezeigt werden, dass für diesen Fall der Beitrag durch den Justierstrom \(I_{Adj}\) sowohl für die Komponentenauswahl,
-	als auch zur Betrachtung der Ausgangsspannung vernachlässigt werden kann.
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=.9\textwidth]{referenzen/typical_app_schem.jpg}
-		\caption{Aus dem Datenblatt übernommenes Diagram eines typischen Anwendungsszenarios eines LM317 Linearreglers \cite{datasheet.LM317.TexasInstruments.2021}. Zentrale Elemente sind hier der Linearregler selbst, sowie
-		die beiden Widerstände \(R_1\) und \(R_2\). \(R_2\) insbesondere dient hier zur justierung der Ausgangsspannung.}
-		\label{fig:typical app sch}
-	\end{figure}
+	als auch zur Betrachtung der Ausgangsspannung vernachlässigt werden kann.\par
+	Weiter ist die Ausgangsspannung für alle Verhältnisse von \(\frac{R_2}{R_1} \approx 3,037\) gegeben. Hierbei ist jedoch zu beachten, dass
+	der Beitrag des Justierstromes umso weniger vernachlässigt werden kann, je höher der Wert von \(R_2\) wird.
